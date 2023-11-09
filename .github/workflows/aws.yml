@@ -41,7 +41,7 @@ jobs:
 
       - name: Set up SSH key
         run: |
-          mkdir -p ~/.ssh
+
           echo "${{ secrets.SSH_PRIVATE_KEY_INPUT_TEST_AWS }}" | base64 --decode > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H ${{ secrets.HOST_INPUT_TEST_AWS }} >> ~/.ssh/known_hosts
