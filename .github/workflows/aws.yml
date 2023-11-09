@@ -53,4 +53,4 @@ jobs:
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY_INPUT_TEST_AWS }}
           TARGET_DIR: ${{ secrets.TARGET_DIR }} # The directory where you want to deploy your app
         run: |
-          scp -o StrictHostKeyChecking=no -i  ~/.ssh/deploy_key . $USERNAME@$HOST:$TARGET_DIR
+          scp -r -i ~/.ssh/deploy_key . $USERNAME@$HOST:$TARGET_DIR
