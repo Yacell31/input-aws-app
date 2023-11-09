@@ -1,0 +1,30 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main  # Set this to the branch you want to deploy from
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" | base64 --decode > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to EC2
+        env:
+          HOST: ${{ secrets.HOST }}
+          USERNAME: ${{ secrets.USERNAME }}
+          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          TARGET_DIR: ${{ secrets.TARGET_DIR }} # The directory where you want to deploy your app
+        run: |
+          scp -r -i ~/.ssh/deploy_key . $USERNAME@$HOST:$TARGET_DIR
