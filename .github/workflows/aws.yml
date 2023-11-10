@@ -1,25 +1,44 @@
-name: Deploy to EC2
+name: CI
 
 on:
   push:
-    branches:
-      - master
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  workflow_dispatch:
 
 jobs:
-  deploy:
+  build:
+
     runs-on: ubuntu-latest
 
+    if: github.ref == 'refs/heads/master'
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
+      - run: npm ci
+      - run: npm run build
+      - run: npm run test
 
-
-      - name: Deploy to EC2
-        env:
-          HOST: ${{ secrets.HOST }}
-          USERNAME: ${{ secrets.USERNAME }}
-          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY_INPUT_TEST_AWS }}
-          TARGET_DIR: ${{ secrets.TARGET_DIR }} # The directory where you want to deploy your app
+      - name: Set up SSH key
         run: |
-          scp -r -i ~/.ssh/deploy_key . $USERNAME@$HOST:$TARGET_DIR
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY_INPUT_TEST_AWS }}" | base64 --decode > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.HOST_INPUT_TEST_AWS }} >> ~/.ssh/known_hosts
+          
+      - name: rsync deployments
+        uses: burnett01/rsync-deployments@5.1
+        with:
+          switches: -avzr --delete
+          path: ./*
+          remote_path: /var/www/input-test-aws/
+          remote_host: "${{ secrets.HOST_INPUT_TEST_AWS }}"
+          remote_user: ubuntu
+          remote_key: "${{ secrets.SSH_PRIVATE_KEY_INPUT_TEST_AWS }}"
