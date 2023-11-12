@@ -29,12 +29,9 @@ jobs:
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.HOST_INPUT_TEST_AWS }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY_INPUT_TEST_AWS }}
-          script: |
-              cd ${{ secrets.TARGET_DIR }}
-              git pull origin main
-              npm install
-              npm run build
-              pm2 restart all
+          switches: -avzr --delete
+          path: ./*
+          remote_path: ${{ secrets.TARGET_DIR }}
+          remote_host: ${{ secrets.HOST_INPUT_TEST_AWS }}
+          remote_user: ubuntu
+          remote_key: "${{ secrets.SSH_PRIVATE_KEY_INPUT_TEST_AWS }}"
