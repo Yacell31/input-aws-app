@@ -26,12 +26,6 @@ jobs:
           npm install
           npm run build
 
-      - name: Decode SSH Key
-        run: echo "${{ secrets.SSH_PRIVATE_KEY_INPUT_TEST_AWS }}" | base64 -d > $HOME/.ssh/id_rsa
-
-      - name: Set SSH Key Permissions
-        run: chmod 600 $HOME/.ssh/id_rsa
-
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
