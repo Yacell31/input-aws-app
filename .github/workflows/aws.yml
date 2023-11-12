@@ -35,3 +35,10 @@ jobs:
           remote_host: ec2-54-144-98-248.compute-1.amazonaws.com
           remote_user: ec2-user
           remote_key: "${{ secrets.SSH_PRIVATE_KEY_INPUT_TEST_AWS }}"
+
+          script: |
+            cd  /var/www/input-test-aws/
+            git pull origin main
+            npm install
+            npm run build
+            pm2 restart all
