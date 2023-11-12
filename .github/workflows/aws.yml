@@ -32,6 +32,6 @@ jobs:
           switches: -avzr --delete
           path: ./*
           remote_path: "${{ secrets.TARGET_DIR }}"
-          remote_host: "${{ secrets.HOST_INPUT_TEST_AWS }}"
+          remote_host: ec2-54-144-98-248.compute-1.amazonaws.com
           remote_user: ubuntu
           remote_key: "${{ secrets.SSH_PRIVATE_KEY_INPUT_TEST_AWS }}"
